@@ -1,0 +1,26 @@
+[
+  {
+    "id": 12,
+    "firstName": "Alex",
+    "lastName": "Bronco",
+    "isActive": true,
+    "address": "Kyiv",
+    "dateOfBirth": "26.07.2001"
+  },
+  {
+    "id": 4,
+    "firstName": "Ronnie",
+    "lastName": "Coleman",
+    "isActive": true,
+    "address": "USA",
+    "dateOfBirth": "13.05.1964"
+  },
+  {
+    "id": 10,
+    "firstName": "Jay",
+    "lastName": "Cutler",
+    "isActive": true,
+    "address": "USA",
+    "dateOfBirth": "03.08.1973"
+  }
+]

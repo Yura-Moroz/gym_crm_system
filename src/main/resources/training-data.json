@@ -1,0 +1,29 @@
+[
+  {
+    "id": 15,
+    "traineeId": 12,
+    "trainerId": 1,
+    "trainingName": "Back",
+    "trainingType": "BACK_TRAINING",
+    "date": "2025-08-27T12:00:00",
+    "trainingDuration": 3600
+  },
+  {
+    "id": 17,
+    "traineeId": 10,
+    "trainerId": 2,
+    "trainingName": "Powerlifting",
+    "trainingType": "POWERLIFTING",
+    "date": "2024-09-02T11:30:00",
+    "trainingDuration": 3600
+  },
+  {
+    "id": 9,
+    "traineeId": 4,
+    "trainerId": 3,
+    "trainingName": "Arms day",
+    "trainingType": "ARMS_DAY",
+    "date": "2025-10-10T17:00:00",
+    "trainingDuration": 3600
+  }
+]
