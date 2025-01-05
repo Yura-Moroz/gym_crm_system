@@ -2,11 +2,11 @@ package com.yuramoroz.spring_crm_system.repository;
 
 import java.util.List;
 
-public interface BaseDAO<T> {
+public interface BaseDao<T> {
 
     public T getById(long id);
 
-    public List<T> getAllItems();
+    public List<T> getAll();
 
     public T create(T entity);
 

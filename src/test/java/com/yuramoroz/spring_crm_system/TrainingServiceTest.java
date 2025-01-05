@@ -1,8 +1,8 @@
 package com.yuramoroz.spring_crm_system;
 
-import com.yuramoroz.spring_crm_system.repository.TrainingDAO;
+import com.yuramoroz.spring_crm_system.repository.TrainingDao;
 import com.yuramoroz.spring_crm_system.entity.Training;
-import com.yuramoroz.spring_crm_system.entity.TrainingTypeName;
+import com.yuramoroz.spring_crm_system.entity.TrainingType;
 import com.yuramoroz.spring_crm_system.service.TrainingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.times;
 
 public class TrainingServiceTest {
     @Mock
-    private TrainingDAO trainingDAO;
+    private TrainingDao trainingDAO;
 
     @InjectMocks
     private TrainingService trainingService;
@@ -32,7 +32,7 @@ public class TrainingServiceTest {
     public void setUp(){
         MockitoAnnotations.openMocks(this);
         training = new Training(44L, 3L, "Chest",
-                TrainingTypeName.BENCH_TRAINING, LocalDateTime.of(2025, Month.AUGUST, 27, 12, 0, 0), Duration.ofMinutes(90));
+                TrainingType.BENCH_TRAINING, LocalDateTime.of(2025, Month.AUGUST, 27, 12, 0, 0), Duration.ofMinutes(90));
     }
 
     @Test
@@ -50,14 +50,14 @@ public class TrainingServiceTest {
         when(trainingDAO.create(any(Training.class))).thenReturn(training);
 
         Training createdTraining = trainingService.createTraining(
-                44L, 3L, "Chest", TrainingTypeName.BENCH_TRAINING,
+                44L, 3L, "Chest", TrainingType.BENCH_TRAINING,
                 LocalDateTime.of(2025, Month.AUGUST, 27, 12, 0, 0),
                 Duration.ofMinutes(90));
 
         assertEquals(44L, createdTraining.getTraineeId());
         assertEquals(3L, createdTraining.getTrainerId());
         assertEquals("Chest", createdTraining.getTrainingName());
-        assertEquals(TrainingTypeName.BENCH_TRAINING, createdTraining.getTrainingType());
+        assertEquals(TrainingType.BENCH_TRAINING, createdTraining.getTrainingType());
         assertEquals(LocalDateTime.of(2025, Month.AUGUST, 27, 12, 0, 0),
                 createdTraining.getTrainingDate());
         assertEquals(Duration.ofMinutes(90), createdTraining.getTrainingDuration());
@@ -76,11 +76,11 @@ public class TrainingServiceTest {
     @Test
     public void getAllTrainingsTest(){
         List<Training> trainings = List.of(training);
-        when(trainingDAO.getAllItems()).thenReturn(trainings);
+        when(trainingDAO.getAll()).thenReturn(trainings);
 
         List<Training> resultList = trainingService.getAllTrainings();
 
-        verify(trainingDAO, times(1)).getAllItems();
+        verify(trainingDAO, times(1)).getAll();
         assertEquals(resultList, trainings);
     }
 }

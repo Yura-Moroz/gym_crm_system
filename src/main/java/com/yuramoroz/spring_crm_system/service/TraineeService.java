@@ -1,9 +1,10 @@
 package com.yuramoroz.spring_crm_system.service;
 
-import com.yuramoroz.spring_crm_system.repository.TraineeDAO;
+import com.yuramoroz.spring_crm_system.repository.TraineeDao;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.utils.ProfileHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,9 +16,9 @@ public class TraineeService {
 
     private static long traineeIDs = 0L;
 
-    private final TraineeDAO traineeDAO;
+    private final TraineeDao traineeDAO;
 
-    public TraineeService(TraineeDAO traineeDAO) {
+    public TraineeService(TraineeDao traineeDAO) {
         this.traineeDAO = traineeDAO;
     }
 
@@ -64,7 +65,7 @@ public class TraineeService {
 
     public List<Trainee> getAllTrainees() {
         log.info("Selecting Trainee list");
-        List<Trainee> resultList =  traineeDAO.getAllItems();
+        List<Trainee> resultList =  traineeDAO.getAll();
         log.info("Selection succeed");
         return resultList;
     }

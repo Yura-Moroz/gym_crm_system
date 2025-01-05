@@ -1,7 +1,7 @@
 package com.yuramoroz.spring_crm_system.service;
 
-import com.yuramoroz.spring_crm_system.entity.TrainingTypeName;
-import com.yuramoroz.spring_crm_system.repository.TrainingDAO;
+import com.yuramoroz.spring_crm_system.entity.TrainingType;
+import com.yuramoroz.spring_crm_system.repository.TrainingDao;
 import com.yuramoroz.spring_crm_system.entity.Training;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,9 +16,9 @@ public class TrainingService {
 
     private static long trainingIDs = 0;
 
-    private final TrainingDAO trainingDAO;
+    private final TrainingDao trainingDAO;
 
-    public TrainingService(TrainingDAO trainingDAO) {
+    public TrainingService(TrainingDao trainingDAO) {
         this.trainingDAO = trainingDAO;
     }
 
@@ -29,7 +29,7 @@ public class TrainingService {
     }
 
     public Training createTraining(long traineeId, long trainerId, String trainingName,
-                                   TrainingTypeName trainingType, LocalDateTime trainingDate, Duration trainingDuration){
+                                   TrainingType trainingType, LocalDateTime trainingDate, Duration trainingDuration){
         Training training = new Training();
         training.setTraineeId(traineeId);
         training.setTrainerId(trainerId);
@@ -51,7 +51,7 @@ public class TrainingService {
 
     public List<Training> getAllTrainings(){
         log.info("Selecting Training list");
-        List<Training> trainings = trainingDAO.getAllItems();
+        List<Training> trainings = trainingDAO.getAll();
         log.info("Selection succeed");
         return trainings;
     }

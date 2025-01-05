@@ -19,13 +19,13 @@ public class Training {
     private long traineeId;
     private long trainerId;
     private String trainingName;
-    private TrainingTypeName trainingType;
+    private TrainingType trainingType;
     @JsonProperty("date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime trainingDate;
     private Duration trainingDuration;
 
-    public Training(long traineeId, long trainerId, String trainingName, TrainingTypeName trainingType,
+    public Training(long traineeId, long trainerId, String trainingName, TrainingType trainingType,
                     LocalDateTime trainingDate, Duration trainingDuration) {
         this.traineeId = traineeId;
         this.trainerId = trainerId;

@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class TrainerDAO implements BaseDAO<Trainer> {
+public class TrainerDao implements BaseDao<Trainer> {
 
     private final Map<Long, Trainer> trainerStorage;
 
     @Autowired
-    public TrainerDAO(Map<Long, Trainer> trainerStorage) {
+    public TrainerDao(Map<Long, Trainer> trainerStorage) {
         this.trainerStorage = trainerStorage;
     }
 
@@ -37,7 +37,7 @@ public class TrainerDAO implements BaseDAO<Trainer> {
     }
 
     @Override
-    public List<Trainer> getAllItems() {return new ArrayList<>(trainerStorage.values());}
+    public List<Trainer> getAll() {return new ArrayList<>(trainerStorage.values());}
 
     @Override
     public void delete(Trainer trainer) {}

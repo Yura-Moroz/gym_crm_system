@@ -1,6 +1,6 @@
 package com.yuramoroz.spring_crm_system;
 
-import com.yuramoroz.spring_crm_system.repository.TraineeDAO;
+import com.yuramoroz.spring_crm_system.repository.TraineeDao;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.service.TraineeService;
 import com.yuramoroz.spring_crm_system.utils.ProfileHandler;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 public class TraineeServiceTest {
     @Mock
-    private TraineeDAO traineeDAO;
+    private TraineeDao traineeDAO;
 
     @InjectMocks
     private TraineeService traineeService;
@@ -102,10 +102,10 @@ public class TraineeServiceTest {
         List<Trainee> trainees = List.of(
                 new Trainee("Jim", "Ivanov", false, "Iowa", LocalDate.of(1988, 11, 19)),
                 new Trainee("Tom", "Cruise", true, "NYC", LocalDate.of(1962, 7, 3)));
-        when(traineeDAO.getAllItems()).thenReturn(trainees);
+        when(traineeDAO.getAll()).thenReturn(trainees);
 
         List<Trainee> resultList = traineeService.getAllTrainees();
-        verify(traineeDAO, times(1)).getAllItems();
+        verify(traineeDAO, times(1)).getAll();
         assertEquals(resultList, trainees);
     }
 }

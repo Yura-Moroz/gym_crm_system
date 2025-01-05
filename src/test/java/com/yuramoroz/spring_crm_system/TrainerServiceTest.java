@@ -1,6 +1,6 @@
 package com.yuramoroz.spring_crm_system;
 
-import com.yuramoroz.spring_crm_system.repository.TrainerDAO;
+import com.yuramoroz.spring_crm_system.repository.TrainerDao;
 import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.service.TrainerService;
 import com.yuramoroz.spring_crm_system.utils.ProfileHandler;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.times;
 
 public class TrainerServiceTest {
     @Mock
-    private TrainerDAO trainerDAO;
+    private TrainerDao trainerDAO;
 
     @InjectMocks
     private TrainerService trainerService;
@@ -93,10 +93,10 @@ public class TrainerServiceTest {
                 new Trainer("Johnny", "Depp", true, "Running"),
                 new Trainer("Freddie", "Mercury", true, "Singing"));
 
-        when(trainerDAO.getAllItems()).thenReturn(trainers);
+        when(trainerDAO.getAll()).thenReturn(trainers);
 
         List<Trainer> resultList = trainerService.getAllTrainers();
-        verify(trainerDAO, times(1)).getAllItems();
+        verify(trainerDAO, times(1)).getAll();
         assertEquals(resultList, trainers);
     }
 }

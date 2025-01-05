@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.yuramoroz.spring_crm_system.entity.TrainingTypeName;
+import com.yuramoroz.spring_crm_system.entity.TrainingType;
 import com.yuramoroz.spring_crm_system.storage.StorageInitializer;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.entity.Trainer;
@@ -89,8 +89,8 @@ public class StorageInitializerTest {
     @Test
     void initializeTrainingStorage_ShouldPopulateTrainingMap() throws Exception {
         List<Training> mockTrainings = List.of(
-                new Training(1L, 10L, 24L, "Full-body workout", TrainingTypeName.CROSSFIT, LocalDateTime.of(2025, 4, 12, 14, 15, 0), Duration.ofMinutes(60)),
-                new Training(2L, 2L, 31L, "Legs", TrainingTypeName.LEGS_DAY, LocalDateTime.of(2025, 1, 15, 10, 0, 0), Duration.ofMinutes(60))
+                new Training(1L, 10L, 24L, "Full-body workout", TrainingType.CROSSFIT, LocalDateTime.of(2025, 4, 12, 14, 15, 0), Duration.ofMinutes(60)),
+                new Training(2L, 2L, 31L, "Legs", TrainingType.LEGS_DAY, LocalDateTime.of(2025, 1, 15, 10, 0, 0), Duration.ofMinutes(60))
         );
 
         when(mapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockTrainings);

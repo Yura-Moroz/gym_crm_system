@@ -2,7 +2,6 @@ package com.yuramoroz.spring_crm_system.repository;
 
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -10,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class TraineeDAO implements BaseDAO<Trainee> {
+public class TraineeDao implements BaseDao<Trainee> {
 
     private final Map<Long, Trainee> traineeStorage;
 
     @Autowired
-    public TraineeDAO(Map<Long, Trainee> traineeStorage) {
+    public TraineeDao(Map<Long, Trainee> traineeStorage) {
         this.traineeStorage = traineeStorage;
     }
 
@@ -25,7 +24,7 @@ public class TraineeDAO implements BaseDAO<Trainee> {
     }
 
     @Override
-    public List<Trainee> getAllItems() {return new ArrayList<>(traineeStorage.values());}
+    public List<Trainee> getAll() {return new ArrayList<>(traineeStorage.values());}
 
     @Override
     public Trainee create(Trainee trainee) {
