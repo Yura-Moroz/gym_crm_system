@@ -47,7 +47,7 @@ public class TrainingServiceTest {
 
     @Test
     public void createTrainingTest_WithSeveralParams(){
-        when(trainingDAO.create(any(Training.class))).thenReturn(training);
+        when(trainingDAO.create(any(Training.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         Training createdTraining = trainingService.createTraining(
                 44L, 3L, "Chest", TrainingType.BENCH_TRAINING,

@@ -3,7 +3,7 @@ package com.yuramoroz.spring_crm_system;
 import com.yuramoroz.spring_crm_system.repository.TrainerDao;
 import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.service.TrainerService;
-import com.yuramoroz.spring_crm_system.utils.ProfileHandler;
+import com.yuramoroz.spring_crm_system.utils.ProfileLoginAndPasswordGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -48,11 +48,11 @@ public class TrainerServiceTest {
         String password = "qwerty";
         String login = "user";
 
-        try (MockedStatic<ProfileHandler> mockedStatic = mockStatic(ProfileHandler.class)) {
-            mockedStatic.when(ProfileHandler::generatePassword).thenReturn(password);
-            mockedStatic.when(() -> ProfileHandler.generateUsername(any(Trainer.class))).thenReturn(login);
+        try (MockedStatic<ProfileLoginAndPasswordGenerator> mockedStatic = mockStatic(ProfileLoginAndPasswordGenerator.class)) {
+            mockedStatic.when(ProfileLoginAndPasswordGenerator::generatePassword).thenReturn(password);
+            mockedStatic.when(() -> ProfileLoginAndPasswordGenerator.generateUsername(any(Trainer.class))).thenReturn(login);
 
-            when(trainerDAO.create(any(Trainer.class))).thenReturn(trainer);
+            when(trainerDAO.create(any(Trainer.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             Trainer createdTrainer = trainerService.createTrainer(
                     "Jason", "Momoa", true, "Beer");
@@ -62,18 +62,33 @@ public class TrainerServiceTest {
             assertEquals(login, createdTrainer.getUserName());
             assertEquals("Jason", createdTrainer.getFirstName());
             assertEquals("Momoa", createdTrainer.getLastName());
-            assertTrue(createdTrainer.getIsActive());
+            assertTrue(createdTrainer.getActive());
             assertEquals("Beer", createdTrainer.getSpecialization());
         }
     }
 
     @Test
     public void updateTrainerTest(){
-        when(trainerDAO.update(eq(1L))).thenReturn(trainer);
 
-        Trainer updatedTrainer = trainerService.updateTrainer(1L);
+        when(trainerDAO.getById(trainer.getId())).thenReturn(trainer);
+        when(trainerDAO.update(any(Trainer.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-        verify(trainerDAO, times(1)).update(1L);
+        trainerService.createTrainer(trainer);
+
+        Trainer updatedTrainer = trainerService.getTrainerById(trainer.getId());
+        updatedTrainer.setSpecialization("Jumping");
+        updatedTrainer.setActive(false);
+
+        trainerService.updateTrainer(updatedTrainer);
+        updatedTrainer = trainerService.getTrainerById(updatedTrainer.getId());
+
+        verify(trainerDAO, times(2)).getById(updatedTrainer.getId());
+        verify(trainerDAO, times(1)).update(updatedTrainer);
+        verify(trainerDAO, times(1)).create(trainer);
+        assertEquals("Jason", updatedTrainer.getFirstName());
+        assertEquals("Statham", trainer.getLastName());
+        assertEquals("Jumping", trainer.getSpecialization());
+        assertEquals(false, trainer.getActive());
         assertEquals(updatedTrainer, trainer);
     }
 

@@ -10,6 +10,7 @@ import java.util.Map;
 
 @Repository
 public class TraineeDao implements BaseDao<Trainee> {
+    private static long traineeIDs = 0L;
 
     private final Map<Long, Trainee> traineeStorage;
 
@@ -28,14 +29,14 @@ public class TraineeDao implements BaseDao<Trainee> {
 
     @Override
     public Trainee create(Trainee trainee) {
+        trainee.setId(++traineeIDs);
         traineeStorage.put(trainee.getId(), trainee);
         return trainee;
     }
 
     @Override
-    public Trainee update(long id) {
-        Trainee trainee = traineeStorage.get(id);
-        traineeStorage.put(id, trainee);
+    public Trainee update(Trainee trainee) {
+        traineeStorage.put(trainee.getId(), trainee);
         return trainee;
     }
 

@@ -36,13 +36,11 @@ class TrainerDaoTest {
     @Test
     void update_shouldUpdateTrainerInStorage() {
         Trainer trainer = new Trainer(1L, "Alice Johnson");
-        when(trainerStorageMock.get(1L)).thenReturn(trainer);
 
-        Trainer result = trainerDao.update(1L);
+        Trainer result = trainerDao.update(trainer);
 
         assertNotNull(result);
         assertEquals(trainer, result);
-        verify(trainerStorageMock, times(1)).get(1L);
         verify(trainerStorageMock, times(1)).put(1L, trainer);
     }
 

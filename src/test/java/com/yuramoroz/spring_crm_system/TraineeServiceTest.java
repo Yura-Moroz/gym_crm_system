@@ -3,7 +3,7 @@ package com.yuramoroz.spring_crm_system;
 import com.yuramoroz.spring_crm_system.repository.TraineeDao;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.service.TraineeService;
-import com.yuramoroz.spring_crm_system.utils.ProfileHandler;
+import com.yuramoroz.spring_crm_system.utils.ProfileLoginAndPasswordGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -49,11 +49,11 @@ public class TraineeServiceTest {
         String password = "qwerty";
         String login = "user";
 
-        try (MockedStatic<ProfileHandler> mockedStatic = mockStatic(ProfileHandler.class)) {
-            mockedStatic.when(ProfileHandler::generatePassword).thenReturn(password);
-            mockedStatic.when(() -> ProfileHandler.generateUsername(any(Trainee.class))).thenReturn(login);
+        try (MockedStatic<ProfileLoginAndPasswordGenerator> mockedStatic = mockStatic(ProfileLoginAndPasswordGenerator.class)) {
+            mockedStatic.when(ProfileLoginAndPasswordGenerator::generatePassword).thenReturn(password);
+            mockedStatic.when(() -> ProfileLoginAndPasswordGenerator.generateUsername(any(Trainee.class))).thenReturn(login);
 
-            when(traineeDAO.create(any(Trainee.class))).thenReturn(trainee);
+            when(traineeDAO.create(any(Trainee.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             Trainee createdTrainee = traineeService.createTrainee(
                     "Peter", "Pranker", true, "Washington", LocalDate.of(1990, 10, 1));
@@ -63,7 +63,7 @@ public class TraineeServiceTest {
             assertEquals(login, createdTrainee.getUserName());
             assertEquals("Peter", createdTrainee.getFirstName());
             assertEquals("Pranker", createdTrainee.getLastName());
-            assertTrue(createdTrainee.getIsActive());
+            assertTrue(createdTrainee.getActive());
             assertEquals("Washington", createdTrainee.getAddress());
             assertEquals(LocalDate.of(1990, 10, 1), createdTrainee.getDateOfBirth());
         }
@@ -72,13 +72,26 @@ public class TraineeServiceTest {
     @Test
     public void updateTraineeTest() {
 
-        when(traineeDAO.update(eq(1L))).thenReturn(trainee);
+        when(traineeDAO.getById(trainee.getId())).thenReturn(trainee);
+        when(traineeDAO.update(any(Trainee.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-        Trainee updatedTrainee = traineeService.updateTrainee(1L);
+        traineeService.createTrainee(trainee);
 
-        verify(traineeDAO, times(1)).update(1L);
+        Trainee updatedTrainee = traineeService.getTraineeById(trainee.getId());
+        updatedTrainee.setFirstName("Dmytriy");
+        updatedTrainee.setAddress("Zhytomyr");
 
-        assertEquals(updatedTrainee, trainee);
+        traineeService.updateTrainee(updatedTrainee);
+        updatedTrainee = traineeService.getTraineeById(updatedTrainee.getId());
+
+        verify(traineeDAO, times(2)).getById(updatedTrainee.getId());
+        verify(traineeDAO, times(1)).create(updatedTrainee);
+        verify(traineeDAO, times(1)).update(updatedTrainee);
+        assertEquals("Dmytriy", updatedTrainee.getFirstName());
+        assertEquals("Zhytomyr", updatedTrainee.getAddress());
+        assertEquals("Tarantino", updatedTrainee.getLastName());
+        assertEquals(true, updatedTrainee.getActive());
+        assertEquals(trainee, updatedTrainee);
     }
 
     @Test

@@ -11,6 +11,8 @@ import java.util.Map;
 @Repository
 public class TrainerDao implements BaseDao<Trainer> {
 
+    private static long trainerIDs = 0;
+
     private final Map<Long, Trainer> trainerStorage;
 
     @Autowired
@@ -20,14 +22,14 @@ public class TrainerDao implements BaseDao<Trainer> {
 
     @Override
     public Trainer create(Trainer trainer) {
+        trainer.setId(++trainerIDs);
         trainerStorage.put(trainer.getId(), trainer);
         return trainer;
     }
 
     @Override
-    public Trainer update(long id) {
-        Trainer trainer = trainerStorage.get(id);
-        trainerStorage.put(id, trainer);
+    public Trainer update(Trainer trainer) {
+        trainerStorage.put(trainer.getId(), trainer);
         return trainer;
     }
 

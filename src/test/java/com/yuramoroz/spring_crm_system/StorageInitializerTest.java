@@ -17,6 +17,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,8 +58,14 @@ public class StorageInitializerTest {
                 TRAINEE_STORAGE_PATH, TRAINER_STORAGE_PATH, TRAINING_STORAGE_PATH, mapper);
     }
 
+    private Object invokePrivateMethod(String methodName, Class<?>[] argClasses, Object[] argObjects) throws Exception {
+        Method method = StorageInitializer.class.getDeclaredMethod(methodName, argClasses);
+        method.setAccessible(true);
+        return method.invoke(storageInitializer, argObjects);
+    }
+
     @Test
-    void initializeTraineeStorage_ShouldPopulateTraineeMapTest() throws IOException {
+    void initializeTraineeStorage_ShouldPopulateTraineeMapTest() throws Exception {
         List<Trainee> mockTrainees = List.of(new Trainee("Alex", "Bronco", true,
                         "Kyiv", LocalDate.of(2001, 7, 26)),
                 new Trainee("Ronnie", "Coleman", true, "USA",
@@ -67,7 +75,7 @@ public class StorageInitializerTest {
 
         when(mapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockTrainees);
 
-        storageInitializer.initializeTraineeStorage();
+        invokePrivateMethod("initializeTraineeStorage", new Class[]{}, new Object[]{});
 
         verify(traineeStorage, times(3)).put(anyLong(), any(Trainee.class));
     }
@@ -81,7 +89,7 @@ public class StorageInitializerTest {
 
         when(mapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockTrainers);
 
-        storageInitializer.initializeTrainerStorage();
+        invokePrivateMethod("initializeTrainerStorage", new Class[]{}, new Object[]{});
 
         verify(trainerStorage, times(2)).put(anyLong(), any(Trainer.class));
     }
@@ -95,86 +103,167 @@ public class StorageInitializerTest {
 
         when(mapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockTrainings);
 
-        storageInitializer.initializeTrainingStorage();
+        invokePrivateMethod("initializeTrainingStorage", new Class[]{}, new Object[]{});
 
         verify(trainingStorage, times(2)).put(anyLong(), any(Training.class));
     }
 
     @Test
-    void initializeTrainingStorage_ShouldThrowAnExceptionWhenFilePathIsNull() {
+    void initializeTrainingStorage_ShouldThrowAnExceptionWhenFilePathIsNull() throws NoSuchMethodException {
         StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
                 TRAINEE_STORAGE_PATH, TRAINER_STORAGE_PATH, null, mapper);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, initializer::initializeTrainingStorage);
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainingStorage", new Class[]{});
+        method.setAccessible(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            try {
+                method.invoke(initializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
         assertEquals("No proper data for Training file path was provided", exception.getMessage());
     }
 
     @Test
-    void initializeTrainingStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() {
+    void initializeTrainingStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() throws NoSuchMethodException {
         StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
                 TRAINEE_STORAGE_PATH, TRAINER_STORAGE_PATH, "   ", mapper);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, initializer::initializeTrainingStorage);
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainingStorage", new Class[]{});
+        method.setAccessible(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            try {
+                method.invoke(initializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
         assertEquals("No proper data for Training file path was provided", exception.getMessage());
     }
 
     @Test
-    void initializeTraineeStorage_ShouldThrowAnExceptionWhenFilePathIsNull() {
+    void initializeTraineeStorage_ShouldThrowAnExceptionWhenFilePathIsNull() throws NoSuchMethodException {
         StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
                 null, TRAINER_STORAGE_PATH, TRAINING_STORAGE_PATH, mapper);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, initializer::initializeTraineeStorage);
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTraineeStorage", new Class[]{});
+        method.setAccessible(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            try {
+                method.invoke(initializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
         assertEquals("No proper data for Trainee file path was provided", exception.getMessage());
     }
 
     @Test
-    void initializeTraineeStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() {
+    void initializeTraineeStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() throws NoSuchMethodException {
         StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
                 "   ", TRAINER_STORAGE_PATH, TRAINING_STORAGE_PATH, mapper);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, initializer::initializeTraineeStorage);
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTraineeStorage", new Class[]{});
+        method.setAccessible(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            try {
+                method.invoke(initializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
         assertEquals("No proper data for Trainee file path was provided", exception.getMessage());
     }
 
     @Test
-    void initializeTrainerStorage_ShouldThrowAnExceptionWhenFilePathIsNull() {
+    void initializeTrainerStorage_ShouldThrowAnExceptionWhenFilePathIsNull() throws NoSuchMethodException {
         StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
                 TRAINEE_STORAGE_PATH, null, TRAINING_STORAGE_PATH, mapper);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, initializer::initializeTrainerStorage);
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainerStorage", new Class[]{});
+        method.setAccessible(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            try {
+                method.invoke(initializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
         assertEquals("No proper data for Trainer file path was provided", exception.getMessage());
     }
 
     @Test
-    void initializeTrainerStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() {
+    void initializeTrainerStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() throws NoSuchMethodException {
         StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
                 TRAINEE_STORAGE_PATH, "   ", TRAINING_STORAGE_PATH, mapper);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, initializer::initializeTrainerStorage);
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainerStorage", new Class[]{});
+        method.setAccessible(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            try {
+                method.invoke(initializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
         assertEquals("No proper data for Trainer file path was provided", exception.getMessage());
     }
 
     @Test
-    void initializeTrainingStorage_ShouldThrowIOExceptionOnReadValueTroubles() throws IOException {
+    void initializeTrainingStorage_ShouldThrowIOExceptionOnReadValueTroubles() throws IOException, NoSuchMethodException {
         when(mapper.readValue(any(File.class), any(TypeReference.class))).thenThrow(new IOException("Mocked IOException"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, storageInitializer::initializeTrainingStorage);
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainingStorage", new Class[]{});
+        method.setAccessible(true);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            try {
+                method.invoke(storageInitializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
+        assertTrue(exception.getCause().getMessage().contains("Mocked IOException"));
+    }
+
+    @Test
+    void initializeTraineeStorage_ShouldThrowIOExceptionOnReadValueTroubles() throws IOException, NoSuchMethodException {
+        when(mapper.readValue(any(File.class), any(TypeReference.class))).thenThrow(new IOException("Mocked IOException"));
+
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTraineeStorage", new Class[]{});
+        method.setAccessible(true);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            try {
+                method.invoke(storageInitializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
         assertTrue(exception.getMessage().contains("Mocked IOException"));
     }
 
     @Test
-    void initializeTraineeStorage_ShouldThrowIOExceptionOnReadValueTroubles() throws IOException {
+    void initializeTrainerStorage_ShouldThrowIOExceptionOnReadValueTroubles() throws IOException, NoSuchMethodException {
         when(mapper.readValue(any(File.class), any(TypeReference.class))).thenThrow(new IOException("Mocked IOException"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, storageInitializer::initializeTraineeStorage);
-        assertTrue(exception.getMessage().contains("Mocked IOException"));
-    }
+        Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainingStorage", new Class[]{});
+        method.setAccessible(true);
 
-    @Test
-    void initializeTrainerStorage_ShouldThrowIOExceptionOnReadValueTroubles() throws IOException {
-        when(mapper.readValue(any(File.class), any(TypeReference.class))).thenThrow(new IOException("Mocked IOException"));
-
-        RuntimeException exception = assertThrows(RuntimeException.class, storageInitializer::initializeTrainerStorage);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            try {
+                method.invoke(storageInitializer);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
+            }
+        });
         assertTrue(exception.getMessage().contains("Mocked IOException"));
     }
 }

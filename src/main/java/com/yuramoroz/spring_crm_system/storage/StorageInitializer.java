@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.entity.Training;
+import com.yuramoroz.spring_crm_system.entity.User;
+import com.yuramoroz.spring_crm_system.utils.ProfileLoginAndPasswordGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +77,7 @@ public class StorageInitializer implements BeanPostProcessor {
         return bean;
     }
 
-    public void initializeTraineeStorage() {
+    private void initializeTraineeStorage() {
 
         if (traineeStoragePath == null || traineeStoragePath.isBlank()) {
             log.error("Invalid value was provided for Trainee file path");
@@ -91,10 +93,11 @@ public class StorageInitializer implements BeanPostProcessor {
             throw new RuntimeException(e);
         }
         trainees.forEach(trainee -> traineeMap.put(trainee.getId(), trainee));
-        log.info("Log from trainee storage initialization");
+        ProfileLoginAndPasswordGenerator.generatePassword(traineeMap);
+        ProfileLoginAndPasswordGenerator.generateUsername(traineeMap);
     }
 
-    public void initializeTrainerStorage() {
+    private void initializeTrainerStorage() {
 
         if (trainerStoragePath == null || trainerStoragePath.isBlank()) {
             log.error("Invalid value was provided for Trainer file path");
@@ -110,9 +113,11 @@ public class StorageInitializer implements BeanPostProcessor {
             throw new RuntimeException(e);
         }
         trainers.forEach(trainer -> trainerMap.put(trainer.getId(), trainer));
+        ProfileLoginAndPasswordGenerator.generatePassword(trainerMap);
+        ProfileLoginAndPasswordGenerator.generateUsername(trainerMap);
     }
 
-    public void initializeTrainingStorage() {
+    private void initializeTrainingStorage() {
 
         if (trainingStoragePath == null || trainingStoragePath.isBlank()) {
             log.error("Invalid value was provided for Training file path");

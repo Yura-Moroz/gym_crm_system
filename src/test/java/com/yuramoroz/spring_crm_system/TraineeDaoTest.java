@@ -80,14 +80,12 @@ public class TraineeDaoTest {
     void update_shouldUpdateTraineeInStorage() {
         Trainee existingTrainee = new Trainee("Alex", "Bronco", true,
                 "Kyiv", LocalDate.of(2001, 7, 26));
-        when(traineeStorageMock.get(1L)).thenReturn(existingTrainee);
 
-        Trainee result = traineeDao.update(1L);
+        Trainee result = traineeDao.update(existingTrainee);
 
         assertNotNull(result);
         assertEquals(existingTrainee, result);
-        verify(traineeStorageMock, times(1)).get(1L);
-        verify(traineeStorageMock, times(1)).put(1L, existingTrainee);
+        verify(traineeStorageMock, times(1)).put(existingTrainee.getId(), existingTrainee);
     }
 
     @Test

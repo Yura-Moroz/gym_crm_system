@@ -13,12 +13,12 @@ public abstract class User {
     private String lastName;
     private String userName;
     private String password;
-    private Boolean isActive;
+    private Boolean active;
 
-    public User(String firstName, String lastName, Boolean isActive) {
+    public User(String firstName, String lastName, Boolean active) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.isActive = isActive;
+        this.active = active;
     }
 
 }

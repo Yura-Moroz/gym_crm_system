@@ -13,9 +13,6 @@ import java.util.List;
 @Service
 @Slf4j
 public class TrainingService {
-
-    private static long trainingIDs = 0;
-
     private final TrainingDao trainingDAO;
 
     public TrainingService(TrainingDao trainingDAO) {
@@ -23,9 +20,8 @@ public class TrainingService {
     }
 
     public Training createTraining(Training training){
-        trainingDAO.create(training);
-        log.info("Training was created successfully");
-        return training;
+        log.info("Creating Training");
+        return trainingDAO.create(training);
     }
 
     public Training createTraining(long traineeId, long trainerId, String trainingName,
@@ -37,22 +33,17 @@ public class TrainingService {
         training.setTrainingType(trainingType);
         training.setTrainingDate(trainingDate);
         training.setTrainingDuration(trainingDuration);
-        training.setId(++trainingIDs);
         log.info("Training was assembled successfully");
         return createTraining(training);
     }
 
     public Training getTrainingById(Long id){
         log.info("Selecting Training by ID");
-        Training training = trainingDAO.getById(id);
-        log.info("Selection succeed");
-        return training;
+        return trainingDAO.getById(id);
     }
 
     public List<Training> getAllTrainings(){
         log.info("Selecting Training list");
-        List<Training> trainings = trainingDAO.getAll();
-        log.info("Selection succeed");
-        return trainings;
+        return trainingDAO.getAll();
     }
 }

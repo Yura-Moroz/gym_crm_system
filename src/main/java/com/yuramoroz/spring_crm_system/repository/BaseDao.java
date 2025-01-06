@@ -10,7 +10,7 @@ public interface BaseDao<T> {
 
     public T create(T entity);
 
-    public T update(long id);
+    public T update(T entity);
 
     public void delete(T entity);
 }

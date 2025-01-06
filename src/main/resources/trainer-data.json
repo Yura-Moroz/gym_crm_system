@@ -3,21 +3,21 @@
     "id": 1,
     "firstName": "John",
     "lastName": "Conor",
-    "isActive": true,
+    "active": true,
     "specialization": "Fitness"
   },
   {
     "id": 2,
     "firstName": "Arnold",
     "lastName": "Schwarzenegger",
-    "isActive": false,
+    "active": false,
     "specialization": "Bodybuilding"
   },
   {
     "id": 3,
     "firstName": "Dwayne",
     "lastName": "Jonson",
-    "isActive": true,
+    "active": true,
     "specialization": "Powerlifting"
   }
 ]
