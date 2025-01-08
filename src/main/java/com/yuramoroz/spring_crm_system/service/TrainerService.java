@@ -16,10 +16,12 @@ public class TrainerService{
 
     private final TrainerDao trainerDAO;
 
+    private final ProfileLoginAndPasswordGenerator loginAndPasswordGenerator;
+
     public Trainer createTrainer(Trainer trainer){
         log.info("Creating Trainer");
-        trainer.setPassword(ProfileLoginAndPasswordGenerator.generatePassword());
-        trainer.setUserName(ProfileLoginAndPasswordGenerator.generateUsername(trainer));
+        trainer.setPassword(loginAndPasswordGenerator.generatePassword());
+        trainer.setUserName(loginAndPasswordGenerator.generateUsername(trainer));
         return trainerDAO.create(trainer);
     }
 

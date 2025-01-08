@@ -22,6 +22,9 @@ public class TraineeServiceTest {
     @Mock
     private TraineeDao traineeDAO;
 
+    @Mock
+    private ProfileLoginAndPasswordGenerator loginAndPasswordGenerator;
+
     @InjectMocks
     private TraineeService traineeService;
 
@@ -49,24 +52,21 @@ public class TraineeServiceTest {
         String password = "qwerty";
         String login = "user";
 
-        try (MockedStatic<ProfileLoginAndPasswordGenerator> mockedStatic = mockStatic(ProfileLoginAndPasswordGenerator.class)) {
-            mockedStatic.when(ProfileLoginAndPasswordGenerator::generatePassword).thenReturn(password);
-            mockedStatic.when(() -> ProfileLoginAndPasswordGenerator.generateUsername(any(Trainee.class))).thenReturn(login);
+        when(loginAndPasswordGenerator.generatePassword()).thenReturn(password);
+        when(loginAndPasswordGenerator.generateUsername(any(Trainee.class))).thenReturn(login);
+        when(traineeDAO.create(any(Trainee.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            when(traineeDAO.create(any(Trainee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        Trainee createdTrainee = traineeService.createTrainee(
+                "Peter", "Pranker", true, "Washington", LocalDate.of(1990, 10, 1));
 
-            Trainee createdTrainee = traineeService.createTrainee(
-                    "Peter", "Pranker", true, "Washington", LocalDate.of(1990, 10, 1));
-
-            verify(traineeDAO, times(1)).create(any(Trainee.class));
-            assertEquals(password, createdTrainee.getPassword());
-            assertEquals(login, createdTrainee.getUserName());
-            assertEquals("Peter", createdTrainee.getFirstName());
-            assertEquals("Pranker", createdTrainee.getLastName());
-            assertTrue(createdTrainee.getActive());
-            assertEquals("Washington", createdTrainee.getAddress());
-            assertEquals(LocalDate.of(1990, 10, 1), createdTrainee.getDateOfBirth());
-        }
+        verify(traineeDAO, times(1)).create(any(Trainee.class));
+        assertEquals(password, createdTrainee.getPassword());
+        assertEquals(login, createdTrainee.getUserName());
+        assertEquals("Peter", createdTrainee.getFirstName());
+        assertEquals("Pranker", createdTrainee.getLastName());
+        assertTrue(createdTrainee.getActive());
+        assertEquals("Washington", createdTrainee.getAddress());
+        assertEquals(LocalDate.of(1990, 10, 1), createdTrainee.getDateOfBirth());
     }
 
     @Test

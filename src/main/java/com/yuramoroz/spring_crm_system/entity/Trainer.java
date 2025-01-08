@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class Trainer extends User{
-    private Long id;
+    private long id;
     private String specialization;
 
     public Trainer(String firstName, String lastName, Boolean isActive, String specialization) {

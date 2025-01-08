@@ -5,6 +5,7 @@ import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.utils.ProfileLoginAndPasswordGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,14 +14,15 @@ import java.util.List;
 @Service
 @Slf4j
 @AllArgsConstructor
+@Lazy
 public class TraineeService {
 
     private final TraineeDao traineeDAO;
-
+    private final ProfileLoginAndPasswordGenerator loginAndPasswordGenerator;
     public Trainee createTrainee(Trainee trainee) {
         log.info("Creating Trainee");
-        trainee.setPassword(ProfileLoginAndPasswordGenerator.generatePassword());
-        trainee.setUserName(ProfileLoginAndPasswordGenerator.generateUsername(trainee));
+        trainee.setPassword(loginAndPasswordGenerator.generatePassword());
+        trainee.setUserName(loginAndPasswordGenerator.generateUsername(trainee));
         return traineeDAO.create(trainee);
     }
 

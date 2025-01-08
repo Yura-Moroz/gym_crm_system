@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @SuperBuilder
 public class Trainee extends User{
-    private Long id;
+    private long id;
     private String address;
     @JsonProperty("dateOfBirth")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")

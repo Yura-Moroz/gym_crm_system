@@ -36,7 +36,7 @@ public class TrainingService {
         return createTraining(training);
     }
 
-    public Training getTrainingById(Long id){
+    public Training getTrainingById(long id){
         log.info("Selecting Training by ID");
         return trainingDAO.getById(id);
     }
