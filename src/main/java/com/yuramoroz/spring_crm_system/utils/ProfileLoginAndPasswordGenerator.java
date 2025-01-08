@@ -7,19 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileLoginAndPasswordGenerator {
-    private static final Map<String, Integer> logins = new HashMap<>();
 
+    private static final Map<String, Integer> logins = new HashMap<>();
     public static String generatePassword() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder().withinRange('0', 'z').build();
         return generator.generate(10);
-    }
-
-    public static void generatePassword(Map<Long, ? extends User> storage){
-        for(User user : storage.values()){
-            if(user.getPassword() == null || user.getPassword().isBlank()){
-                user.setPassword(generatePassword());
-            }
-        }
     }
 
     public static String generateUsername(User user) {
@@ -27,19 +19,11 @@ public class ProfileLoginAndPasswordGenerator {
 
         if (logins.containsKey(resultLogin)) {
             int serialNumber = logins.get(resultLogin);
-            logins.put(resultLogin, serialNumber + 1);
+            logins.put(resultLogin, ++serialNumber);
             resultLogin += serialNumber;
         }
         logins.put(resultLogin, 0);
 
         return resultLogin;
-    }
-
-    public static void generateUsername(Map<Long, ? extends User> storage) {
-        for (User user : storage.values()) {
-            if(user.getUserName() == null || user.getUserName().isBlank()){
-                user.setUserName(generateUsername(user));
-            }
-        }
     }
 }

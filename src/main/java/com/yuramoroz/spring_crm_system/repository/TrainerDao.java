@@ -1,6 +1,7 @@
 package com.yuramoroz.spring_crm_system.repository;
 
 import com.yuramoroz.spring_crm_system.entity.Trainer;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -42,6 +43,8 @@ public class TrainerDao implements BaseDao<Trainer> {
     public List<Trainer> getAll() {return new ArrayList<>(trainerStorage.values());}
 
     @Override
-    public void delete(Trainer trainer) {}
+    public void delete(Trainer trainer) {
+        throw new NotImplementedException();
+    }
 
 }

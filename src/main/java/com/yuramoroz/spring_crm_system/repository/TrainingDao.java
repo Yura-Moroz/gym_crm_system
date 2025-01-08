@@ -1,6 +1,7 @@
 package com.yuramoroz.spring_crm_system.repository;
 
 import com.yuramoroz.spring_crm_system.entity.Training;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -39,10 +40,12 @@ public class TrainingDao implements BaseDao<Training> {
 
     @Override
     public Training update(Training training) {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
-    public void delete(Training training) {}
+    public void delete(Training training) {
+        throw new NotImplementedException();
+    }
 
 }

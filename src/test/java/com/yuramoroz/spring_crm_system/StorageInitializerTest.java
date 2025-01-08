@@ -5,15 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.yuramoroz.spring_crm_system.entity.TrainingType;
+import com.yuramoroz.spring_crm_system.service.TraineeService;
+import com.yuramoroz.spring_crm_system.service.TrainerService;
+import com.yuramoroz.spring_crm_system.service.TrainingService;
 import com.yuramoroz.spring_crm_system.storage.StorageInitializer;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.entity.Training;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +24,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,13 +34,11 @@ public class StorageInitializerTest {
     private static final String TRAINING_STORAGE_PATH = "src/main/resources/training-data.json";
 
     @Mock
-    private Map<Long, Trainee> traineeStorage;
-
+    private TraineeService traineeService;
     @Mock
-    private Map<Long, Trainer> trainerStorage;
-
+    private TrainerService trainerService;
     @Mock
-    private Map<Long, Training> trainingStorage;
+    private TrainingService trainingService;
 
     @Mock
     private ObjectMapper mapper;
@@ -53,8 +51,7 @@ public class StorageInitializerTest {
         MockitoAnnotations.openMocks(this);
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        storageInitializer = new StorageInitializer(
-                traineeStorage, trainerStorage, trainingStorage,
+        storageInitializer = new StorageInitializer(traineeService, trainerService, trainingService,
                 TRAINEE_STORAGE_PATH, TRAINER_STORAGE_PATH, TRAINING_STORAGE_PATH, mapper);
     }
 
@@ -66,19 +63,19 @@ public class StorageInitializerTest {
 
     @Test
     void initializeTraineeStorage_ShouldPopulateTraineeMapTest() throws Exception {
-        List<Trainee> mockTrainees = List.of(new Trainee("Alex", "Bronco", true,
-                        "Kyiv", LocalDate.of(2001, 7, 26)),
-                new Trainee("Ronnie", "Coleman", true, "USA",
-                        LocalDate.of(1964, 5, 13)),
-                new Trainee("Jay", "Cutler", true, "USA",
-                        LocalDate.of(1973, 8, 3)));
+        List<Trainee> mockTrainees = List.of(
+                new Trainee("Alex", "Bronco", true, "Kyiv", LocalDate.of(2001, 7, 26)),
+                new Trainee("Ronnie", "Coleman", true, "USA", LocalDate.of(1964, 5, 13)),
+                new Trainee("Jay", "Cutler", true, "USA", LocalDate.of(1973, 8, 3))
+        );
 
         when(mapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockTrainees);
 
         invokePrivateMethod("initializeTraineeStorage", new Class[]{}, new Object[]{});
 
-        verify(traineeStorage, times(3)).put(anyLong(), any(Trainee.class));
+        verify(traineeService, times(3)).createTrainee(any(Trainee.class));
     }
+
 
     @Test
     void initializeTrainerStorage_ShouldPopulateTrainerMapTest() throws Exception {
@@ -91,7 +88,7 @@ public class StorageInitializerTest {
 
         invokePrivateMethod("initializeTrainerStorage", new Class[]{}, new Object[]{});
 
-        verify(trainerStorage, times(2)).put(anyLong(), any(Trainer.class));
+        verify(trainerService, times(2)).createTrainer(any(Trainer.class));
     }
 
     @Test
@@ -105,12 +102,12 @@ public class StorageInitializerTest {
 
         invokePrivateMethod("initializeTrainingStorage", new Class[]{}, new Object[]{});
 
-        verify(trainingStorage, times(2)).put(anyLong(), any(Training.class));
+        verify(trainingService, times(2)).createTraining(any(Training.class));
     }
 
     @Test
     void initializeTrainingStorage_ShouldThrowAnExceptionWhenFilePathIsNull() throws NoSuchMethodException {
-        StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
+        StorageInitializer initializer = new StorageInitializer(traineeService, trainerService, trainingService,
                 TRAINEE_STORAGE_PATH, TRAINER_STORAGE_PATH, null, mapper);
 
         Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainingStorage", new Class[]{});
@@ -119,7 +116,7 @@ public class StorageInitializerTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             try {
                 method.invoke(initializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });
@@ -128,7 +125,7 @@ public class StorageInitializerTest {
 
     @Test
     void initializeTrainingStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() throws NoSuchMethodException {
-        StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
+        StorageInitializer initializer = new StorageInitializer(traineeService, trainerService, trainingService,
                 TRAINEE_STORAGE_PATH, TRAINER_STORAGE_PATH, "   ", mapper);
 
         Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainingStorage", new Class[]{});
@@ -137,7 +134,7 @@ public class StorageInitializerTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             try {
                 method.invoke(initializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });
@@ -146,7 +143,7 @@ public class StorageInitializerTest {
 
     @Test
     void initializeTraineeStorage_ShouldThrowAnExceptionWhenFilePathIsNull() throws NoSuchMethodException {
-        StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
+        StorageInitializer initializer = new StorageInitializer(traineeService, trainerService, trainingService,
                 null, TRAINER_STORAGE_PATH, TRAINING_STORAGE_PATH, mapper);
 
         Method method = StorageInitializer.class.getDeclaredMethod("initializeTraineeStorage", new Class[]{});
@@ -155,7 +152,7 @@ public class StorageInitializerTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             try {
                 method.invoke(initializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });
@@ -164,7 +161,7 @@ public class StorageInitializerTest {
 
     @Test
     void initializeTraineeStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() throws NoSuchMethodException {
-        StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
+        StorageInitializer initializer = new StorageInitializer(traineeService, trainerService, trainingService,
                 "   ", TRAINER_STORAGE_PATH, TRAINING_STORAGE_PATH, mapper);
 
         Method method = StorageInitializer.class.getDeclaredMethod("initializeTraineeStorage", new Class[]{});
@@ -173,7 +170,7 @@ public class StorageInitializerTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             try {
                 method.invoke(initializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });
@@ -182,7 +179,7 @@ public class StorageInitializerTest {
 
     @Test
     void initializeTrainerStorage_ShouldThrowAnExceptionWhenFilePathIsNull() throws NoSuchMethodException {
-        StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
+        StorageInitializer initializer = new StorageInitializer(traineeService, trainerService, trainingService,
                 TRAINEE_STORAGE_PATH, null, TRAINING_STORAGE_PATH, mapper);
 
         Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainerStorage", new Class[]{});
@@ -191,7 +188,7 @@ public class StorageInitializerTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             try {
                 method.invoke(initializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });
@@ -200,7 +197,7 @@ public class StorageInitializerTest {
 
     @Test
     void initializeTrainerStorage_ShouldThrowAnExceptionWhenFilePathIsBlank() throws NoSuchMethodException {
-        StorageInitializer initializer = new StorageInitializer(traineeStorage, trainerStorage, trainingStorage,
+        StorageInitializer initializer = new StorageInitializer(traineeService, trainerService, trainingService,
                 TRAINEE_STORAGE_PATH, "   ", TRAINING_STORAGE_PATH, mapper);
 
         Method method = StorageInitializer.class.getDeclaredMethod("initializeTrainerStorage", new Class[]{});
@@ -209,7 +206,7 @@ public class StorageInitializerTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             try {
                 method.invoke(initializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });
@@ -226,7 +223,7 @@ public class StorageInitializerTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             try {
                 method.invoke(storageInitializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });
@@ -243,7 +240,7 @@ public class StorageInitializerTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             try {
                 method.invoke(storageInitializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });
@@ -260,7 +257,7 @@ public class StorageInitializerTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             try {
                 method.invoke(storageInitializer);
-            }catch (InvocationTargetException e){
+            } catch (InvocationTargetException e) {
                 throw e.getCause();
             }
         });

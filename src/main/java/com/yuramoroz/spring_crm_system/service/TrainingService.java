@@ -3,6 +3,7 @@ package com.yuramoroz.spring_crm_system.service;
 import com.yuramoroz.spring_crm_system.entity.TrainingType;
 import com.yuramoroz.spring_crm_system.repository.TrainingDao;
 import com.yuramoroz.spring_crm_system.entity.Training;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +13,10 @@ import java.util.List;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class TrainingService {
-    private final TrainingDao trainingDAO;
 
-    public TrainingService(TrainingDao trainingDAO) {
-        this.trainingDAO = trainingDAO;
-    }
+    private final TrainingDao trainingDAO;
 
     public Training createTraining(Training training){
         log.info("Creating Training");

@@ -1,7 +1,9 @@
 package com.yuramoroz.spring_crm_system;
 
 import com.yuramoroz.spring_crm_system.entity.Trainer;
+import com.yuramoroz.spring_crm_system.entity.Training;
 import com.yuramoroz.spring_crm_system.repository.TrainerDao;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -80,5 +82,10 @@ class TrainerDaoTest {
         assertEquals(trainers.size(), result.size());
         assertTrue(result.containsAll(trainers));
         verify(trainerStorageMock, times(1)).values();
+    }
+
+    @Test
+    void testNotImplementedDeleteMethod() {
+        assertThrows(NotImplementedException.class, () -> trainerDao.delete(new Trainer()));
     }
 }

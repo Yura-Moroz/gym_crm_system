@@ -3,6 +3,7 @@ package com.yuramoroz.spring_crm_system.service;
 import com.yuramoroz.spring_crm_system.repository.TrainerDao;
 import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.utils.ProfileLoginAndPasswordGenerator;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,15 +11,15 @@ import java.util.List;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class TrainerService{
-    private final TrainerDao trainerDAO;
 
-    public TrainerService(TrainerDao trainerDAO) {
-        this.trainerDAO = trainerDAO;
-    }
+    private final TrainerDao trainerDAO;
 
     public Trainer createTrainer(Trainer trainer){
         log.info("Creating Trainer");
+        trainer.setPassword(ProfileLoginAndPasswordGenerator.generatePassword());
+        trainer.setUserName(ProfileLoginAndPasswordGenerator.generateUsername(trainer));
         return trainerDAO.create(trainer);
     }
 
@@ -28,8 +29,6 @@ public class TrainerService{
         trainer.setLastName(lastName);
         trainer.setActive(isActive);
         trainer.setSpecialization(specialization);
-        trainer.setPassword(ProfileLoginAndPasswordGenerator.generatePassword());
-        trainer.setUserName(ProfileLoginAndPasswordGenerator.generateUsername(trainer));
         log.info("Trainer was assembled successfully");
         return createTrainer(trainer);
     }

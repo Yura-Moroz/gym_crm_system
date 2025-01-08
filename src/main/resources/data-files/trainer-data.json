@@ -1,20 +1,17 @@
 [
   {
-    "id": 1,
     "firstName": "John",
     "lastName": "Conor",
     "active": true,
     "specialization": "Fitness"
   },
   {
-    "id": 2,
     "firstName": "Arnold",
     "lastName": "Schwarzenegger",
     "active": false,
     "specialization": "Bodybuilding"
   },
   {
-    "id": 3,
     "firstName": "Dwayne",
     "lastName": "Jonson",
     "active": true,

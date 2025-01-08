@@ -5,76 +5,58 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.entity.Training;
-import com.yuramoroz.spring_crm_system.entity.User;
-import com.yuramoroz.spring_crm_system.utils.ProfileLoginAndPasswordGenerator;
+import com.yuramoroz.spring_crm_system.service.TraineeService;
+import com.yuramoroz.spring_crm_system.service.TrainerService;
+import com.yuramoroz.spring_crm_system.service.TrainingService;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Slf4j
-public class StorageInitializer implements BeanPostProcessor {
-    @Autowired
-    private final ObjectMapper mapper;
+public class StorageInitializer{
 
-    private final Map<Long, Trainee> traineeMap;
-    private final Map<Long, Trainer> trainerMap;
-    private final Map<Long, Training> trainingMap;
+    private final TraineeService traineeService;
+
+    private final TrainerService trainerService;
+
+    private final TrainingService trainingService;
+
+    private final ObjectMapper mapper;
 
     private final String traineeStoragePath;
     private final String trainerStoragePath;
     private final String trainingStoragePath;
 
-    public StorageInitializer(
-            @Qualifier("traineeStorage") Map<Long, Trainee> traineeMap,
-            @Qualifier("trainerStorage") Map<Long, Trainer> trainerMap,
-            @Qualifier("trainingStorage") Map<Long, Training> trainingMap,
-            @Value("${storage.trainees.file}") String traineeStoragePath,
-            @Value("${storage.trainers.file}") String trainerStoragePath,
-            @Value("${storage.trainings.file}") String trainingStoragePath,
-            ObjectMapper mapper) {
-        this.traineeMap = traineeMap;
-        this.trainerMap = trainerMap;
-        this.trainingMap = trainingMap;
+    public StorageInitializer(TraineeService traineeService, TrainerService trainerService, TrainingService trainingService,
+                              @Value("${storage.trainees.file}") String traineeStoragePath,
+                              @Value("${storage.trainers.file}") String trainerStoragePath,
+                              @Value("${storage.trainings.file}") String trainingStoragePath,
+                              ObjectMapper mapper) {
+        this.traineeService = traineeService;
+        this.trainerService = trainerService;
+        this.trainingService = trainingService;
         this.traineeStoragePath = traineeStoragePath;
         this.trainerStoragePath = trainerStoragePath;
         this.trainingStoragePath = trainingStoragePath;
         this.mapper = mapper;
     }
 
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        log.info("Processing bean: Name = {}, Type = {}", beanName, bean.getClass());
-        switch (beanName) {
-            case "traineeDao":
-                log.info("Trainee storage: starts its initializing...");
-                initializeTraineeStorage();
-                log.info("Trainee storage: initializing succeed");
-                break;
-            case "trainerDao":
-                log.info("Trainer storage: starts its initializing...");
-                initializeTrainerStorage();
-                log.info("Trainer storage: initializing succeed");
-                break;
-            case "trainingDao":
-                log.info("Training storage: starts its initializing...");
-                initializeTrainingStorage();
-                log.info("Training storage: initializing succeed");
-                break;
-            default:
-                log.info("Another type of bean name was provided");
-        }
+    @PostConstruct
+    public void initializeAllStorages(){
+        log.info("Trainee storage: starts its initializing...");
+        initializeTraineeStorage();
 
-        return bean;
+        log.info("Trainer storage: starts its initializing...");
+        initializeTrainerStorage();
+
+        log.info("Training storage: starts its initializing...");
+        initializeTrainingStorage();
     }
 
     private void initializeTraineeStorage() {
@@ -92,9 +74,7 @@ public class StorageInitializer implements BeanPostProcessor {
             log.error("Trainee storage: An exception arised when trying to map JSON objects");
             throw new RuntimeException(e);
         }
-        trainees.forEach(trainee -> traineeMap.put(trainee.getId(), trainee));
-        ProfileLoginAndPasswordGenerator.generatePassword(traineeMap);
-        ProfileLoginAndPasswordGenerator.generateUsername(traineeMap);
+        trainees.forEach(trainee -> traineeService.createTrainee(trainee));
     }
 
     private void initializeTrainerStorage() {
@@ -112,9 +92,7 @@ public class StorageInitializer implements BeanPostProcessor {
             log.error("Trainer storage: An exception arised when trying to map JSON objects");
             throw new RuntimeException(e);
         }
-        trainers.forEach(trainer -> trainerMap.put(trainer.getId(), trainer));
-        ProfileLoginAndPasswordGenerator.generatePassword(trainerMap);
-        ProfileLoginAndPasswordGenerator.generateUsername(trainerMap);
+        trainers.forEach(trainerService::createTrainer);
     }
 
     private void initializeTrainingStorage() {
@@ -132,6 +110,6 @@ public class StorageInitializer implements BeanPostProcessor {
             log.error("Training storage: An exception arised when trying to map JSON objects");
             throw new RuntimeException(e);
         }
-        trainings.forEach(training -> trainingMap.put(training.getId(), training));
+        trainings.forEach(trainingService::createTraining);
     }
 }

@@ -1,6 +1,5 @@
 [
   {
-    "id": 15,
     "traineeId": 12,
     "trainerId": 1,
     "trainingName": "Back",
@@ -9,7 +8,6 @@
     "trainingDuration": 3600
   },
   {
-    "id": 17,
     "traineeId": 10,
     "trainerId": 2,
     "trainingName": "Powerlifting",
@@ -18,7 +16,6 @@
     "trainingDuration": 3600
   },
   {
-    "id": 9,
     "traineeId": 4,
     "trainerId": 3,
     "trainingName": "Arms day",
