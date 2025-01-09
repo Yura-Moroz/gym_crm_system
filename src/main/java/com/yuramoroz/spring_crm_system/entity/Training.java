@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Training {
-    private long id;
-    private long traineeId;
-    private long trainerId;
+    private Long id;
+    private Long traineeId;
+    private Long trainerId;
     private String trainingName;
     private TrainingType trainingType;
     @JsonProperty("date")
@@ -25,7 +25,7 @@ public class Training {
     private LocalDateTime trainingDate;
     private Duration trainingDuration;
 
-    public Training(long traineeId, long trainerId, String trainingName, TrainingType trainingType,
+    public Training(Long traineeId, Long trainerId, String trainingName, TrainingType trainingType,
                     LocalDateTime trainingDate, Duration trainingDuration) {
         this.traineeId = traineeId;
         this.trainerId = trainerId;

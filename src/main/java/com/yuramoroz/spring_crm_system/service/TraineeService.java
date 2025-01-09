@@ -14,11 +14,11 @@ import java.util.List;
 @Service
 @Slf4j
 @AllArgsConstructor
-@Lazy
 public class TraineeService {
 
     private final TraineeDao traineeDAO;
     private final ProfileLoginAndPasswordGenerator loginAndPasswordGenerator;
+
     public Trainee createTrainee(Trainee trainee) {
         log.info("Creating Trainee");
         trainee.setPassword(loginAndPasswordGenerator.generatePassword());

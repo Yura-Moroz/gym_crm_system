@@ -23,19 +23,6 @@ public class TrainingService {
         return trainingDAO.create(training);
     }
 
-    public Training createTraining(long traineeId, long trainerId, String trainingName,
-                                   TrainingType trainingType, LocalDateTime trainingDate, Duration trainingDuration){
-        Training training = new Training();
-        training.setTraineeId(traineeId);
-        training.setTrainerId(trainerId);
-        training.setTrainingName(trainingName);
-        training.setTrainingType(trainingType);
-        training.setTrainingDate(trainingDate);
-        training.setTrainingDuration(trainingDuration);
-        log.info("Training was assembled successfully");
-        return createTraining(training);
-    }
-
     public Training getTrainingById(long id){
         log.info("Selecting Training by ID");
         return trainingDAO.getById(id);

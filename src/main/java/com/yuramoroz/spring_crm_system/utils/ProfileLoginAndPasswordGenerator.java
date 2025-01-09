@@ -3,20 +3,21 @@ package com.yuramoroz.spring_crm_system.utils;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
 import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.entity.User;
+import com.yuramoroz.spring_crm_system.repository.TraineeDao;
+import com.yuramoroz.spring_crm_system.repository.TrainerDao;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Component
 public class ProfileLoginAndPasswordGenerator {
     @Autowired
-    private Map<Long, Trainee> traineeMap;
+    private TraineeDao traineeDao;
     @Autowired
-    private Map<Long, Trainer>  trainerMap;
+    private TrainerDao trainerDao;
 
     private static final Set<String> existingUsernames = new HashSet<>();
 
@@ -30,11 +31,11 @@ public class ProfileLoginAndPasswordGenerator {
         String newUsername = baseUser;
 
         if(user instanceof Trainee){
-            for(Trainee trainee : traineeMap.values()){
+            for(Trainee trainee : traineeDao.getAll()){
                 existingUsernames.add(trainee.getUserName());
             }
         }else if(user instanceof Trainer){
-            for(Trainer trainer : trainerMap.values()){
+            for(Trainer trainer : trainerDao.getAll()){
                 existingUsernames.add(trainer.getUserName());
             }
         }

@@ -1,4 +1,4 @@
-package com.yuramoroz.spring_crm_system;
+package com.yuramoroz.spring_crm_system.storage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

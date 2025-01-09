@@ -1,4 +1,4 @@
-package com.yuramoroz.spring_crm_system;
+package com.yuramoroz.spring_crm_system.service;
 
 import com.yuramoroz.spring_crm_system.repository.TrainingDao;
 import com.yuramoroz.spring_crm_system.entity.Training;
@@ -36,31 +36,13 @@ public class TrainingServiceTest {
     }
 
     @Test
-    public void createTrainingTest_WithSingleParam(){
+    public void createTrainingTest(){
         when(trainingDAO.create(any(Training.class))).thenReturn(training);
 
         Training createdTraining = trainingService.createTraining(training);
 
         verify(trainingDAO, times(1)).create(training);
         assertEquals(createdTraining, training);
-    }
-
-    @Test
-    public void createTrainingTest_WithSeveralParams(){
-        when(trainingDAO.create(any(Training.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
-
-        Training createdTraining = trainingService.createTraining(
-                44L, 3L, "Chest", TrainingType.BENCH_TRAINING,
-                LocalDateTime.of(2025, Month.AUGUST, 27, 12, 0, 0),
-                Duration.ofMinutes(90));
-
-        assertEquals(44L, createdTraining.getTraineeId());
-        assertEquals(3L, createdTraining.getTrainerId());
-        assertEquals("Chest", createdTraining.getTrainingName());
-        assertEquals(TrainingType.BENCH_TRAINING, createdTraining.getTrainingType());
-        assertEquals(LocalDateTime.of(2025, Month.AUGUST, 27, 12, 0, 0),
-                createdTraining.getTrainingDate());
-        assertEquals(Duration.ofMinutes(90), createdTraining.getTrainingDuration());
     }
 
     @Test

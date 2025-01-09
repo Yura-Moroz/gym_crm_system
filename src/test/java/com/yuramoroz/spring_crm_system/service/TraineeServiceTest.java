@@ -1,4 +1,4 @@
-package com.yuramoroz.spring_crm_system;
+package com.yuramoroz.spring_crm_system.service;
 
 import com.yuramoroz.spring_crm_system.repository.TraineeDao;
 import com.yuramoroz.spring_crm_system.entity.Trainee;
