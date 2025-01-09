@@ -5,46 +5,51 @@ import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.entity.User;
 import com.yuramoroz.spring_crm_system.repository.TraineeDao;
 import com.yuramoroz.spring_crm_system.repository.TrainerDao;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Component
+@Slf4j
 public class ProfileLoginAndPasswordGenerator {
     @Autowired
     private TraineeDao traineeDao;
     @Autowired
     private TrainerDao trainerDao;
 
-    private static final Set<String> existingUsernames = new HashSet<>();
-
     public String generatePassword() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder().withinRange('0', 'z').build();
+        log.info("Generated unique username for new user");
         return generator.generate(10);
     }
 
     public String generateUsername(User user) {
-        String baseUser = user.getFirstName() + "." + user.getLastName();
-        String newUsername = baseUser;
+        String baseUsername = user.getFirstName() + "." + user.getLastName();
+        String username = baseUsername;
+        int serialNumber = 1;
 
-        if(user instanceof Trainee){
-            for(Trainee trainee : traineeDao.getAll()){
-                existingUsernames.add(trainee.getUserName());
-            }
-        }else if(user instanceof Trainer){
-            for(Trainer trainer : trainerDao.getAll()){
-                existingUsernames.add(trainer.getUserName());
-            }
+        List<? extends User> userList;
+        if (user instanceof Trainee) {
+            userList = traineeDao.getAll();
+        } else if (user instanceof Trainer) {
+            userList = trainerDao.getAll();
+        } else {
+            throw new IllegalArgumentException("Unsupported user type");
         }
 
-        int serialNumber = 1;
-        while (existingUsernames.contains(newUsername)){
-            newUsername = baseUser + serialNumber;
+        while (usernameExists(username, userList)) {
+            username = baseUsername + serialNumber;
             serialNumber++;
         }
-        return newUsername;
+
+        log.info("Generated unique username for: {} {}", user.getFirstName(), user.getLastName());
+        return username;
+    }
+
+    private boolean usernameExists(String usernameToCheck, List<? extends User> users) {
+        return users.stream().anyMatch(user -> user.getUserName().equals(usernameToCheck));
     }
 }

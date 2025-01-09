@@ -33,6 +33,7 @@ public class TrainerServiceTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         trainer = new Trainer("Jason", "Statham", true, "Martial Arts");
+        trainer.setId(1L);
     }
 
     @Test
@@ -78,10 +79,9 @@ public class TrainerServiceTest {
         updatedTrainer.setSpecialization("Jumping");
         updatedTrainer.setActive(false);
 
-        trainerService.updateTrainer(updatedTrainer);
-        updatedTrainer = trainerService.getTrainerById(updatedTrainer.getId());
+        updatedTrainer = trainerService.updateTrainer(updatedTrainer);
 
-        verify(trainerDAO, times(2)).getById(updatedTrainer.getId());
+        verify(trainerDAO, times(1)).getById(updatedTrainer.getId());
         verify(trainerDAO, times(1)).update(updatedTrainer);
         verify(trainerDAO, times(1)).create(trainer);
         assertEquals("Jason", updatedTrainer.getFirstName());

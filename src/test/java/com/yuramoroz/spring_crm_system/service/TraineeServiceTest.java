@@ -34,6 +34,7 @@ public class TraineeServiceTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         trainee = new Trainee("Peter", "Tarantino", true, "Lviv", LocalDate.of(1999, 8, 29));
+        trainee.setId(1L);
     }
 
     @Test
@@ -82,9 +83,8 @@ public class TraineeServiceTest {
         updatedTrainee.setAddress("Zhytomyr");
 
         traineeService.updateTrainee(updatedTrainee);
-        updatedTrainee = traineeService.getTraineeById(updatedTrainee.getId());
 
-        verify(traineeDAO, times(2)).getById(updatedTrainee.getId());
+        verify(traineeDAO, times(1)).getById(updatedTrainee.getId());
         verify(traineeDAO, times(1)).create(updatedTrainee);
         verify(traineeDAO, times(1)).update(updatedTrainee);
         assertEquals("Dmytriy", updatedTrainee.getFirstName());
