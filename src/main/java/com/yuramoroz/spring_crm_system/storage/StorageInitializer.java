@@ -75,7 +75,7 @@ public class StorageInitializer{
             log.error("Trainee storage: An exception arised when trying to map JSON objects");
             throw new RuntimeException(e);
         }
-        trainees.forEach(trainee -> traineeService.createTrainee(trainee));
+        trainees.forEach(traineeService::createTrainee);
     }
 
     private void initializeTrainerStorage() {

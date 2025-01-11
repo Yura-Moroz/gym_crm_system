@@ -6,10 +6,7 @@ import com.yuramoroz.spring_crm_system.service.TraineeService;
 import com.yuramoroz.spring_crm_system.utils.ProfileLoginAndPasswordGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -53,21 +50,24 @@ public class TraineeServiceTest {
         String password = "qwerty";
         String login = "user";
 
-        when(loginAndPasswordGenerator.generatePassword()).thenReturn(password);
-        when(loginAndPasswordGenerator.generateUsername(any(Trainee.class))).thenReturn(login);
-        when(traineeDAO.create(any(Trainee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        try (MockedStatic<ProfileLoginAndPasswordGenerator> mockedStatic = Mockito.mockStatic(ProfileLoginAndPasswordGenerator.class)) {
+            mockedStatic.when(ProfileLoginAndPasswordGenerator::generatePassword).thenReturn(password);
+            mockedStatic.when(() -> ProfileLoginAndPasswordGenerator.generateUsername(any(Trainee.class), any())).thenReturn(login);
 
-        Trainee createdTrainee = traineeService.createTrainee(
-                "Peter", "Pranker", true, "Washington", LocalDate.of(1990, 10, 1));
+            when(traineeDAO.create(any(Trainee.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        verify(traineeDAO, times(1)).create(any(Trainee.class));
-        assertEquals(password, createdTrainee.getPassword());
-        assertEquals(login, createdTrainee.getUserName());
-        assertEquals("Peter", createdTrainee.getFirstName());
-        assertEquals("Pranker", createdTrainee.getLastName());
-        assertTrue(createdTrainee.getActive());
-        assertEquals("Washington", createdTrainee.getAddress());
-        assertEquals(LocalDate.of(1990, 10, 1), createdTrainee.getDateOfBirth());
+            Trainee createdTrainee = traineeService.createTrainee(
+                    "Peter", "Pranker", true, "Washington", LocalDate.of(1990, 10, 1));
+
+            verify(traineeDAO, times(1)).create(any(Trainee.class));
+            assertEquals(password, createdTrainee.getPassword());
+            assertEquals(login, createdTrainee.getUserName());
+            assertEquals("Peter", createdTrainee.getFirstName());
+            assertEquals("Pranker", createdTrainee.getLastName());
+            assertTrue(createdTrainee.getActive());
+            assertEquals("Washington", createdTrainee.getAddress());
+            assertEquals(LocalDate.of(1990, 10, 1), createdTrainee.getDateOfBirth());
+        }
     }
 
     @Test

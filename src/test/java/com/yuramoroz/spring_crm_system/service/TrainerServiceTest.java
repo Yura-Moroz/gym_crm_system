@@ -6,9 +6,7 @@ import com.yuramoroz.spring_crm_system.service.TrainerService;
 import com.yuramoroz.spring_crm_system.utils.ProfileLoginAndPasswordGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.util.List;
 
@@ -51,20 +49,23 @@ public class TrainerServiceTest {
         String password = "qwerty";
         String login = "user";
 
-        when(loginAndPasswordGenerator.generatePassword()).thenReturn(password);
-        when(loginAndPasswordGenerator.generateUsername(any(Trainer.class))).thenReturn(login);
-        when(trainerDAO.create(any(Trainer.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        try(MockedStatic<ProfileLoginAndPasswordGenerator> mockedStatic = Mockito.mockStatic(ProfileLoginAndPasswordGenerator.class)) {
+            mockedStatic.when(ProfileLoginAndPasswordGenerator::generatePassword).thenReturn(password);
+            mockedStatic.when(() -> ProfileLoginAndPasswordGenerator.generateUsername(any(Trainer.class), any())).thenReturn(login);
 
-        Trainer createdTrainer = trainerService.createTrainer(
-                "Jason", "Momoa", true, "Beer");
+            when(trainerDAO.create(any(Trainer.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        verify(trainerDAO, times(1)).create(any(Trainer.class));
-        assertEquals(password, createdTrainer.getPassword());
-        assertEquals(login, createdTrainer.getUserName());
-        assertEquals("Jason", createdTrainer.getFirstName());
-        assertEquals("Momoa", createdTrainer.getLastName());
-        assertTrue(createdTrainer.getActive());
-        assertEquals("Beer", createdTrainer.getSpecialization());
+            Trainer createdTrainer = trainerService.createTrainer(
+                    "Jason", "Momoa", true, "Beer");
+
+            verify(trainerDAO, times(1)).create(any(Trainer.class));
+            assertEquals(password, createdTrainer.getPassword());
+            assertEquals(login, createdTrainer.getUserName());
+            assertEquals("Jason", createdTrainer.getFirstName());
+            assertEquals("Momoa", createdTrainer.getLastName());
+            assertTrue(createdTrainer.getActive());
+            assertEquals("Beer", createdTrainer.getSpecialization());
+        }
     }
 
     @Test

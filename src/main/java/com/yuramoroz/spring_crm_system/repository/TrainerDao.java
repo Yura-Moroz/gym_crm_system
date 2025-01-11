@@ -1,6 +1,7 @@
 package com.yuramoroz.spring_crm_system.repository;
 
 import com.yuramoroz.spring_crm_system.entity.Trainer;
+import com.yuramoroz.spring_crm_system.entity.User;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -47,4 +48,7 @@ public class TrainerDao implements BaseDao<Trainer> {
         throw new NotImplementedException();
     }
 
+    public boolean ifTrainerExistByUsername(String username){
+        return trainerStorage.values().stream().map(User::getUserName).anyMatch(un -> un.equals(username));
+    }
 }

@@ -17,12 +17,11 @@ import java.util.List;
 public class TraineeService {
 
     private final TraineeDao traineeDAO;
-    private final ProfileLoginAndPasswordGenerator loginAndPasswordGenerator;
 
     public Trainee createTrainee(Trainee trainee) {
         log.info("Creating Trainee");
-        trainee.setPassword(loginAndPasswordGenerator.generatePassword());
-        trainee.setUserName(loginAndPasswordGenerator.generateUsername(trainee));
+        trainee.setPassword(ProfileLoginAndPasswordGenerator.generatePassword());
+        trainee.setUserName(ProfileLoginAndPasswordGenerator.generateUsername(trainee, traineeDAO::ifTraineeExistByUsername));
         return traineeDAO.create(trainee);
     }
 

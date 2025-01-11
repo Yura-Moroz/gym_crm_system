@@ -1,99 +1,69 @@
 package com.yuramoroz.spring_crm_system.utils;
 
-import com.yuramoroz.spring_crm_system.entity.Trainee;
-import com.yuramoroz.spring_crm_system.entity.Trainer;
 import com.yuramoroz.spring_crm_system.entity.User;
-import com.yuramoroz.spring_crm_system.repository.TraineeDao;
-import com.yuramoroz.spring_crm_system.repository.TrainerDao;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.util.List;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ProfileLoginAndPasswordGeneratorTest {
 
-    @Mock
-    private TraineeDao traineeDao;
-
-    @Mock
-    private TrainerDao trainerDao;
-
-    @InjectMocks
-    private ProfileLoginAndPasswordGenerator generator;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     void testGeneratePassword() {
-        String password = generator.generatePassword();
+        String password = ProfileLoginAndPasswordGenerator.generatePassword();
+
         assertNotNull(password);
+
+        for (char c : password.toCharArray()) {
+            assertTrue(c >= '0' && c <= 'z', "Password contains invalid character: " + c);
+        }
         assertEquals(10, password.length(), "Password length should be 10 characters.");
     }
 
     @Test
-    void testGenerateUsernameForTrainee_NoConflict() {
-        Trainee newTrainee = new Trainee("John", "Doe", true, "123 Main St", null);
-        when(traineeDao.getAll()).thenReturn(List.of());
+    void testGenerateUsername_NoConflicts() {
+        User mockUser = mock(User.class);
+        when(mockUser.getFirstName()).thenReturn("John");
+        when(mockUser.getLastName()).thenReturn("Doe");
 
-        String username = generator.generateUsername(newTrainee);
+        Function<String, Boolean> userExistenceChecker = username -> false;
 
-        assertEquals("John.Doe", username);
-        verify(traineeDao, times(1)).getAll();
+        String generatedUsername = ProfileLoginAndPasswordGenerator.generateUsername(mockUser, userExistenceChecker);
+
+        assertEquals("John.Doe", generatedUsername, "Generated username should be 'John.Doe'");
     }
 
     @Test
-    void testGenerateUsernameForTrainee_WithConflict() {
-        Trainee existingTrainee = new Trainee("John", "Doe", true, "123 Main St", null);
-        existingTrainee.setUserName("John.Doe");
-        when(traineeDao.getAll()).thenReturn(List.of(existingTrainee));
+    void testGenerateUsername_WithConflicts() {
+        User mockUser = mock(User.class);
+        when(mockUser.getFirstName()).thenReturn("Jane");
+        when(mockUser.getLastName()).thenReturn("Smith");
 
-        Trainee newTrainee = new Trainee("John", "Doe", true, "456 Elm St", null);
-        String username = generator.generateUsername(newTrainee);
+        // Mock user existence checker: returns true for "Jane.Smith" and "Jane.Smith1", then false
+        Function<String, Boolean> userExistenceChecker = mock(Function.class);
+        when(userExistenceChecker.apply("Jane.Smith")).thenReturn(true);
+        when(userExistenceChecker.apply("Jane.Smith1")).thenReturn(true);
+        when(userExistenceChecker.apply("Jane.Smith2")).thenReturn(false);
 
-        assertEquals("John.Doe1", username);
-        verify(traineeDao, times(1)).getAll();
+        String generatedUsername = ProfileLoginAndPasswordGenerator.generateUsername(mockUser, userExistenceChecker);
+
+        assertEquals("Jane.Smith2", generatedUsername, "Generated username should be 'Jane.Smith2'");
     }
 
     @Test
-    void testGenerateUsernameForTrainer_NoConflict() {
-        Trainer newTrainer = new Trainer("Jane", "Smith", true, "Laughing");
-        when(trainerDao.getAll()).thenReturn(List.of());
+    void testGenerateUsername_EmptyNames() {
+        User mockUser = mock(User.class);
+        when(mockUser.getFirstName()).thenReturn("");
+        when(mockUser.getLastName()).thenReturn("");
 
-        String username = generator.generateUsername(newTrainer);
+        // Mock user existence checker: always returns false (no conflicts)
+        Function<String, Boolean> userExistenceChecker = username -> false;
 
-        assertEquals("Jane.Smith", username);
-        verify(trainerDao, times(1)).getAll();
+        String generatedUsername = ProfileLoginAndPasswordGenerator.generateUsername(mockUser, userExistenceChecker);
+
+        // Verify the username
+        assertEquals(".", generatedUsername, "Generated username should be '.' for empty first and last names");
     }
 
-    @Test
-    void testGenerateUsernameForTrainer_WithConflict() {
-        Trainer existingTrainer = new Trainer("Jane", "Smith", true, "Climbing");
-        existingTrainer.setUserName("Jane.Smith");
-        when(trainerDao.getAll()).thenReturn(List.of(existingTrainer));
-
-        Trainer newTrainer = new Trainer("Jane", "Smith", true, "Swimming");
-        String username = generator.generateUsername(newTrainer);
-
-        assertEquals("Jane.Smith1", username);
-        verify(trainerDao, times(1)).getAll();
-    }
-
-    @Test
-    void testGenerateUsername_UnsupportedUserType() {
-        User unsupportedUser = mock(User.class);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            generator.generateUsername(unsupportedUser);
-        });
-
-        assertEquals("Unsupported user type", exception.getMessage());
-    }
 }

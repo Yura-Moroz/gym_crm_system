@@ -1,6 +1,7 @@
 package com.yuramoroz.spring_crm_system.repository;
 
 import com.yuramoroz.spring_crm_system.entity.Trainee;
+import com.yuramoroz.spring_crm_system.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,7 +26,9 @@ public class TraineeDao implements BaseDao<Trainee> {
     }
 
     @Override
-    public List<Trainee> getAll() {return new ArrayList<>(traineeStorage.values());}
+    public List<Trainee> getAll() {
+        return new ArrayList<>(traineeStorage.values());
+    }
 
     @Override
     public Trainee create(Trainee trainee) {
@@ -43,5 +46,9 @@ public class TraineeDao implements BaseDao<Trainee> {
     @Override
     public void delete(Trainee trainee) {
         traineeStorage.remove(trainee.getId());
+    }
+
+    public boolean ifTraineeExistByUsername(String username) {
+        return traineeStorage.values().stream().map(User::getUserName).anyMatch(un -> un.equals(username));
     }
 }
