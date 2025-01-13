@@ -1,0 +1,20 @@
+[
+  {
+    "firstName": "John",
+    "lastName": "Conor",
+    "active": true,
+    "specialization": "Fitness"
+  },
+  {
+    "firstName": "Arnold",
+    "lastName": "Schwarzenegger",
+    "active": false,
+    "specialization": "Bodybuilding"
+  },
+  {
+    "firstName": "Dwayne",
+    "lastName": "Jonson",
+    "active": true,
+    "specialization": "Powerlifting"
+  }
+]
