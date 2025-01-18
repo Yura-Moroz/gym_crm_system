@@ -1,12 +1,16 @@
 package com.yuramoroz.spring_crm_system.service;
 
 import com.yuramoroz.spring_crm_system.entity.Trainee;
+import com.yuramoroz.spring_crm_system.entity.Training;
+import com.yuramoroz.spring_crm_system.enums.TrainingType;
 import com.yuramoroz.spring_crm_system.repository.impl.TraineeDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -31,9 +35,30 @@ public class TraineeService extends BaseUserService<Trainee>{
                 .dateOfBirth(dateOfBirth)
                 .build();
 
-        trainee = super.saveUser(trainee);
+        return super.saveUser(trainee);
+    }
 
-        log.info("The trainee {} {} was created successfully", firstName, lastName);
-        return trainee;
+    public List<Training> getTrainingsByCriteria(String username, LocalDate dateFrom, LocalDate dateTo,
+                                                 String trainerName, TrainingType trainingType){
+        log.info("Trying to get trainee's trainings by criteria and username");
+
+        List<Training> trainings = new ArrayList<>();
+        if(traineeDao.ifUserExistByUsername(username)){
+            trainings = traineeDao.getTrainingsByCriteria(username, dateFrom, dateTo, trainerName, trainingType);
+        }else{
+            log.warn("There was no user found with such a username {}", username);
+        }
+        return trainings;
+    }
+
+    public void deleteUserByUsername(String username) {
+        log.info("Trying to delete a user by {}", username);
+
+        if (traineeDao.ifUserExistByUsername(username)) {
+            Trainee user = traineeDao.getUserByUsername(username).get();
+            traineeDao.delete(user);
+        } else {
+            log.warn("There was no user found with {} username", username);
+        }
     }
 }

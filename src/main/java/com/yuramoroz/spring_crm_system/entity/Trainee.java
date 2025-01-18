@@ -31,6 +31,7 @@ public class Trainee extends User {
     private LocalDate dateOfBirth;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @Column(name = "trainings")
     private List<Training> trainings = new ArrayList<>();
 
     public Trainee(String firstName, String lastName, Boolean isActive, String address, LocalDate dateOfBirth) {

@@ -1,4 +1,4 @@
-package com.yuramoroz.spring_crm_system.entity;
+package com.yuramoroz.spring_crm_system.enums;
 
 public enum TrainingType {
     LEGS_DAY,

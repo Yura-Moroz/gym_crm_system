@@ -1,12 +1,19 @@
 package com.yuramoroz.spring_crm_system.repository.impl;
 
 import com.yuramoroz.spring_crm_system.entity.Trainee;
+import com.yuramoroz.spring_crm_system.entity.Trainer;
+import com.yuramoroz.spring_crm_system.entity.Training;
+import com.yuramoroz.spring_crm_system.enums.TrainingType;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 @Slf4j
@@ -14,6 +21,28 @@ public class TraineeDao extends UserDaoImpl<Trainee> {
 
     public TraineeDao() {
         super(Trainee.class);
+    }
+
+    public List<Training> getTrainingsByCriteria(String username, LocalDate dateFrom, LocalDate dateTo,
+                                                 String trainerName, TrainingType trainingType){
+        log.info("Trying to get trainings by criteria from DB");
+
+        String jpql = """
+               SELECT t FROM Training t WHERE t.trainee.userName = :username
+               AND t.trainingDate >= :dateFrom AND t.trainingDate <= :dateTo
+               AND t.trainer.firstName = :trainerName OR t.trainer.lastName = :trainerName
+               AND t.trainingType = :trainingType
+               """;
+
+        Query query = entityManager.createQuery(jpql);
+        query.setParameter("username", username);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
+        query.setParameter("trainerName", trainerName);
+        query.setParameter("trainingType", trainingType);
+
+        List<Training> trainings = query.getResultList();
+        return trainings.isEmpty() ? null : trainings;
     }
 
 }

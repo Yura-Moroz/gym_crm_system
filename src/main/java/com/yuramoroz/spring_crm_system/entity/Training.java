@@ -1,10 +1,12 @@
 package com.yuramoroz.spring_crm_system.entity;
 
+import com.yuramoroz.spring_crm_system.enums.TrainingType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -19,28 +21,28 @@ import java.util.List;
 public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "training_id")
+    @Column(name = "id")
     private Long id;
 
-    @OneToMany
+    @ManyToOne
     @Column(name = "trainees_list")
-    private List<Trainee> trainees;
+    private Trainee trainee;
 
-    @OneToMany
+    @ManyToOne
     @Column(name = "trainers_list")
-    private List<Trainer> trainers;
+    private Trainer trainer;
 
     @Column(name = "training_name", nullable = false)
     private String trainingName;
 
-    @Column(name = "training_type")
+    @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private TrainingType trainingType;
 
-    @Column(name = "training_date", nullable = false)
+    @Column(name = "date", nullable = false)
     private LocalDateTime trainingDate;
 
-    @Column(name = "training_duration", nullable = false)
+    @Column(name = "duration", nullable = false)
     private Duration trainingDuration;
 
 }

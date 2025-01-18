@@ -1,14 +1,11 @@
 package com.yuramoroz.spring_crm_system.service;
 
 import com.yuramoroz.spring_crm_system.entity.User;
-import com.yuramoroz.spring_crm_system.entity.Training;
 import com.yuramoroz.spring_crm_system.repository.impl.UserDaoImpl;
 import com.yuramoroz.spring_crm_system.utils.ProfileUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -25,9 +22,7 @@ public abstract class BaseUserService<T extends User> {
         user.setUserName(ProfileUtils.generateUsername(user, userDao::ifUserExistByUsername));
         user.setPassword(ProfileUtils.hashPassword(user.getPassword()));
 
-        T result = userDao.save(user);
-        log.info("User {} {} was successfully saved to the DB", user.getFirstName(), user.getLastName());
-        return result;
+        return userDao.save(user);
     }
 
     public User selectUserByUsername(String username) {
@@ -36,15 +31,16 @@ public abstract class BaseUserService<T extends User> {
         return userDao.ifUserExistByUsername(username) ? userDao.getUserByUsername(username).get() : null;
     }
 
-    public void changeUserPassword(User user, String oldPassword, String newPassword) {
+    public void changeUserPassword(T user, String oldPassword, String newPassword) {
         log.info("Trying to change password in {} {} user", user.getFirstName(), user.getLastName());
 
         boolean approvedPass = ProfileUtils.ifPasswordMatches(oldPassword, user.getPassword());
 
         if (approvedPass) {
             user.setPassword(ProfileUtils.hashPassword(newPassword));
+            updateUser(user);
             log.info("The new password was successfully set to {} {} user", user.getFirstName(), user.getLastName());
-        } else log.info("Sorry... It seems that you've provided a wrong password...");
+        } else log.warn("Sorry... It seems that you've provided a wrong password...");
     }
 
     public T updateUser(T user) {
@@ -52,24 +48,21 @@ public abstract class BaseUserService<T extends User> {
         return userDao.update(user);
     }
 
-    public void activateOrDeactivateUser(T user) {
-        log.info("Activating/Deactivating {} {} profile", user.getFirstName(), user.getLastName());
+    public void deactivateUser(T user) {
+        log.info("Deactivating {} {} profile", user.getFirstName(), user.getLastName());
 
-        user.setActive(!user.isActive());
+        user.setActive(false);
     }
 
-    public void deleteUserByUsername(String username) {
-        log.info("Trying to delete a user by {}", username);
+    public void activateUser(T user) {
+        log.info("Activating {} {} profile", user.getFirstName(), user.getLastName());
 
-        if (userDao.ifUserExistByUsername(username)) {
-            T user = userDao.getUserByUsername(username).get();
-            userDao.delete(user);
-        } else {
-            log.warn("There was no user found with {} username", username);
-        }
+        user.setActive(true);
     }
 
-    public List<Training> getTrainingByUsernameAndCriteria() {
-        return null;
+    public void deleteUser(T user) {
+        log.info("Deleting user...");
+        userDao.delete(user);
     }
+
 }
