@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -38,7 +39,7 @@ public abstract class UserDaoImpl<T extends User> implements UserDao<T> {
     public List<T> getAll() {
         log.info("Getting a list of all users present in the DB");
 
-        Query query = entityManager.createQuery("SELECT * FROM " + clazz.getName());
+        Query query = entityManager.createQuery("SELECT user FROM " + clazz.getName() + " user");
         List<T> users = query.getResultList();
 
         return !users.isEmpty() ? users : new ArrayList<>();
@@ -54,30 +55,14 @@ public abstract class UserDaoImpl<T extends User> implements UserDao<T> {
     @Transactional
     public T save(T entity) {
         log.info("Trying to save an entity to the DB");
-
-        try {
-            if (entity.getId() == null) {
-                entityManager.persist(entity);
-            } else {
-                entity = entityManager.merge(entity);
-            }
-        } catch (Exception e) {
-            log.error("Something went wrong when attempting to save the Trainer");
-        }
+        entityManager.persist(entity);
         return entity;
     }
 
     @Override
     public T update(T entity) {
         log.info("Trying to update an entity in the DB");
-
-        T user;
-        try {
-            user = entityManager.merge(entity);
-        } catch (Exception e) {
-            throw new RuntimeException("Something went wrong when trying to update a user");
-        }
-        return user;
+        return entityManager.merge(entity);
     }
 
     @Override
@@ -93,23 +78,29 @@ public abstract class UserDaoImpl<T extends User> implements UserDao<T> {
     public Optional<T> getUserByUsername(String username) {
         log.info("Trying to get user by '" + username + "' login");
 
-        String jpqlQuery = "SELECT * FROM " + clazz.getName() + " user WHERE user.userName = :login";
-        Query query = entityManager.createQuery(jpqlQuery);
-        query.setParameter("login", username);
+        T returnedUser;
+        try {
+            String jpqlQuery = "SELECT user FROM " + clazz.getName() + " user WHERE user.userName = :login";
+            Query query = entityManager.createQuery(jpqlQuery);
+            query.setParameter("login", username);
 
-        T returnedUser = (T) query.getSingleResult();
-        return returnedUser != null ? Optional.of(returnedUser) : Optional.empty();
+            returnedUser = (T) query.getSingleResult();
+        } catch (Exception e) {
+            throw new NoSuchElementException("There is no user with such username: " + username);
+        }
+        return Optional.of(returnedUser);
     }
 
     @Override
     public boolean ifUserExistByUsername(String username) {
         log.info("Checking if user exists with '" + username + "' login");
 
-        String jpqlQuery = "SELECT * FROM " + clazz.getName() + " user WHERE user.userName = :login";
+        String jpqlQuery = "SELECT COUNT(user) FROM " + clazz.getName() + " user WHERE user.userName = :login";
         Query query = entityManager.createQuery(jpqlQuery);
         query.setParameter("login", username);
+        Long counter = (Long) query.getSingleResult();
 
-        return query.getSingleResult() != null;
+        return counter > 0;
     }
 
 }

@@ -10,7 +10,5 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class TrainingApp {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        TraineeDao traineeDao = context.getBean("traineeDao", TraineeDao.class);
-        traineeDao.getAll();
     }
 }

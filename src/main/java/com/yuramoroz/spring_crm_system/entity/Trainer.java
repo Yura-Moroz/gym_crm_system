@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "trainers", schema = "my_db")
+@Table(name = "trainers")
 public class Trainer extends User{
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

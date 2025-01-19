@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -30,19 +31,19 @@ public class TraineeDao extends UserDaoImpl<Trainee> {
         String jpql = """
                SELECT t FROM Training t WHERE t.trainee.userName = :username
                AND t.trainingDate >= :dateFrom AND t.trainingDate <= :dateTo
-               AND t.trainer.firstName = :trainerName OR t.trainer.lastName = :trainerName
+               AND (t.trainer.firstName = :trainerName OR t.trainer.lastName = :trainerName)
                AND t.trainingType = :trainingType
                """;
 
         Query query = entityManager.createQuery(jpql);
         query.setParameter("username", username);
-        query.setParameter("dateFrom", dateFrom);
-        query.setParameter("dateTo", dateTo);
+        query.setParameter("dateFrom", dateFrom.atTime(0, 0, 0));
+        query.setParameter("dateTo", dateTo.atTime(23, 59, 59));
         query.setParameter("trainerName", trainerName);
         query.setParameter("trainingType", trainingType);
 
         List<Training> trainings = query.getResultList();
-        return trainings.isEmpty() ? null : trainings;
+        return trainings.isEmpty() ? new ArrayList<>() : trainings;
     }
 
 }

@@ -8,17 +8,6 @@ import java.util.function.Function;
 
 @Slf4j
 public class ProfileUtils {
-    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public static String hashPassword(String password) {
-        log.info("Hashing provided password");
-        return passwordEncoder.encode(password);
-    }
-
-    public static boolean ifPasswordMatches(String password, String encodedPassword) {
-        log.info("Checking if provided password matches to encoded DB version");
-        return passwordEncoder.matches(password, encodedPassword);
-    }
 
     public static String generateUsername(User user, Function<String, Boolean> userExistenceChecker) {
         String baseUsername = user.getFirstName() + "." + user.getLastName();
